@@ -1,0 +1,78 @@
+package exo2_1;
+
+import java.io.*;
+import java.net.*;
+
+public class Server {
+	
+	public static void main(String[] args) throws IOException {
+		
+		//https://helloraspberrypi.blogspot.com/2013/12/java-exercise-implement-client-and.html
+		
+		// first step
+		ServerSocket server = new ServerSocket(0);
+		System.out.println("Je suis là: " + server.getLocalPort());    
+		
+		ClientThread client = new ClientThread("Thread #1");
+        client.start();
+
+		
+        // second step
+     	Socket link = server.accept();
+		OutputStream outputStream = link.getOutputStream();
+		PrintStream printStream = new PrintStream(outputStream);
+        printStream.print("Test 1 2 1 2");
+        printStream.close();
+        
+        
+        
+        
+        
+        link.close();
+        server.close();
+		
+	}
+}
+
+package exo2_1;
+
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+class ClientThread extends Thread {
+	
+	
+	public ClientThread (String s) {
+		super(s);
+	}
+	
+	
+	public void run() {
+		
+		// Si c'est deux sockets différents :
+		Scanner scan = new Scanner(System.in);  // Create a Scanner object
+	    System.out.println("Numéro de port");
+
+	    String num_string = scan.nextLine();  // Read user input
+	    Integer port = Integer.parseInt(num_string);
+		
+		try {
+			Socket socket = new Socket(InetAddress.getLocalHost(), port);
+			InputStream inStream = socket.getInputStream();
+			Scanner s = new Scanner(inStream).useDelimiter("\\A");
+			String result = s.hasNext() ? s.next() : "";
+			
+			System.out.println(result);
+			s.close();
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		scan.close();
+		
+	}
+}
